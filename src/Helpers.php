@@ -1,8 +1,10 @@
 <?php
 
-if (! function_exists('custom_helper')) {
-    function custom_helper($value)
+if (! function_exists('displayAmount')) {
+    function displayAmount($amount, $sign = null): string
     {
-        return strtoupper($value); // مثال: تبدیل متن به حروف بزرگ
+        if ($sign === null)
+            $sign = config('helpers.currency');
+        return number_format($amount, 0, '.', ',') . ' ' . (string)$sign;
     }
 }
