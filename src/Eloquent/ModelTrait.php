@@ -56,4 +56,69 @@ trait ModelTrait
         return $query->where('created_at', '>=', Carbon::today()->subDay())
             ->where('created_at', '<', Carbon::today());
     }
+
+    /**
+     * Scope to search records with LIKE
+     *
+     * @param Builder $query
+     * @param string $column
+     * @param string $value
+     * @return Builder
+     */
+    public function scopeWhereLike(Builder $query, string $column, string $value): Builder
+    {
+        return $query->where($column, 'LIKE', '%' . $value . '%');
+    }
+
+    /**
+     * Scope to order records by latest created_at
+     *
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeOrderByLatest(Builder $query): Builder
+    {
+        return $query->orderBy('created_at', 'desc');
+    }
+
+    /**
+     * Scope to filter records within a date range
+     *
+     * @param Builder $query
+     * @param Carbon|string $start
+     * @param Carbon|string $end
+     * @param string $column
+     * @return Builder
+     */
+    public function scopeWhereInDateRange(Builder $query, $start, $end, string $column = 'created_at'): Builder
+    {
+        return $query->whereBetween($column, [
+            $start instanceof Carbon ? $start : Carbon::parse($start),
+            $end instanceof Carbon ? $end : Carbon::parse($end),
+        ]);
+    }
+
+    /**
+     * Scope to include soft-deleted records
+     *
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeWithTrashed(Builder $query): Builder
+    {
+        return $query->withTrashed();
+    }
+
+    /**
+     * Scope to filter records by status
+     *
+     * @param Builder $query
+     * @param string|int $status
+     * @param string $column
+     * @return Builder
+     */
+    public function scopeWhereStatus(Builder $query, $status, string $column = 'status'): Builder
+    {
+        return $query->where($column, $status);
+    }
 }
