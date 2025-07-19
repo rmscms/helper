@@ -8,6 +8,7 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Orchestra\Testbench\TestCase;
 use RMS\Helper\WebServices\Rest;
+use ReflectionProperty;
 
 class WebServiceTest extends TestCase
 {
@@ -24,11 +25,16 @@ class WebServiceTest extends TestCase
         $handlerStack = HandlerStack::create($mock);
         $client = new Client(['handler' => $handlerStack]);
 
-        $service = $this->getMockBuilder(Rest::class)->onlyMethods(['url', 'requestMethod', 'client'])->getMockForAbstractClass();
-
+        $service = $this->getMockBuilder(Rest::class)
+            ->onlyMethods(['url', 'requestMethod'])
+            ->getMockForAbstractClass();
         $service->method('url')->willReturn('https://api.example.com/test');
         $service->method('requestMethod')->willReturn('POST');
-        $service->method('client')->willReturn($client);
+
+        // تنظیم client با Reflection
+        $reflection = new ReflectionProperty(Rest::class, 'client');
+        $reflection->setAccessible(true);
+        $reflection->setValue($service, $client);
 
         $result = $service->withParameters(['key' => 'value'])->send();
         $this->assertEquals(['success' => true], $result);
@@ -42,11 +48,16 @@ class WebServiceTest extends TestCase
         $handlerStack = HandlerStack::create($mock);
         $client = new Client(['handler' => $handlerStack]);
 
-        $service = $this->getMockBuilder(Rest::class)->onlyMethods(['url', 'requestMethod', 'client'])->getMockForAbstractClass();
-
+        $service = $this->getMockBuilder(Rest::class)
+            ->onlyMethods(['url', 'requestMethod'])
+            ->getMockForAbstractClass();
         $service->method('url')->willReturn('https://api.example.com/test');
         $service->method('requestMethod')->willReturn('GET');
-        $service->method('client')->willReturn($client);
+
+        // تنظیم client با Reflection
+        $reflection = new ReflectionProperty(Rest::class, 'client');
+        $reflection->setAccessible(true);
+        $reflection->setValue($service, $client);
 
         $result = $service->withParameters(['key' => 'value'])->send();
         $this->assertFalse($result);

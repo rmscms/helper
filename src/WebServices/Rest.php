@@ -7,6 +7,7 @@ use GuzzleHttp\Exception\GuzzleException;
 
 abstract class Rest extends WebService
 {
+    protected Client $client;
     protected bool $verify = true;
     protected bool $httpErrors = false;
     protected bool $debug = false;
@@ -84,14 +85,6 @@ abstract class Rest extends WebService
         return $this;
     }
 
-    protected function client(): Client
-    {
-        if (!$this->client) {
-            $this->client = new Client();
-        }
-        return $this->client;
-    }
-
     public function send(string $uri = ''): mixed
     {
         $requestOptions = [
@@ -115,7 +108,7 @@ abstract class Rest extends WebService
         }
 
         try {
-            $response = $this->client()->request($this->requestMethod(), $this->url($uri), $requestOptions);
+            $response = $this->client->request($this->requestMethod(), $this->url($uri), $requestOptions);
             $content = $response->getBody()->getContents();
             return $this->jsonResponse ? json_decode($content, true) : $content;
         } catch (GuzzleException $e) {

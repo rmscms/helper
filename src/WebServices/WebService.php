@@ -2,15 +2,11 @@
 
 namespace RMS\Helper\WebServices;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
-
 abstract class WebService
 {
     protected int $timeout = 60;
-    protected ?GuzzleException $lastException = null;
+    protected ?object $lastException = null;
     protected array $parameters = [];
-    protected ?Client $client = null;
 
     /**
      * Add or merge parameters for the request
@@ -25,18 +21,11 @@ abstract class WebService
     }
 
     /**
-     * Get the HTTP client instance
-     *
-     * @return Client
-     */
-    abstract protected function client(): Client;
-
-    /**
      * Get the last exception thrown during the request
      *
-     * @return GuzzleException|null
+     * @return object|null
      */
-    public function getLastException(): ?GuzzleException
+    public function getLastException(): ?object
     {
         return $this->lastException;
     }
