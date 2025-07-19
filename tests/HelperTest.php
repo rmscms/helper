@@ -87,4 +87,29 @@ class HelperTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         \RMS\Helper\gregorian_date('invalid/date/format');
     }
+
+    public function testPersianToTimestamp()
+    {
+        $timestamp = \RMS\Helper\persian_to_timestamp('1404/04/29');
+        $expected = Carbon::create(2025, 7, 20)->startOfDay()->getTimestamp();
+        $this->assertEquals($expected, $timestamp);
+    }
+
+    public function testIsValidPersianDate()
+    {
+        $this->assertTrue(\RMS\Helper\is_valid_persian_date('1404/04/29'));
+        $this->assertFalse(\RMS\Helper\is_valid_persian_date('1404/13/29'));
+    }
+
+    public function testPersianDateDiff()
+    {
+        $diff = \RMS\Helper\persian_date_diff('1404/04/29', '1404/04/30');
+        $this->assertEquals(1, $diff);
+    }
+
+    public function testPersianNow()
+    {
+        $result = \RMS\Helper\persian_now('Y/m/d');
+        $this->assertStringContainsString(Carbon::now()->format('1404'), $result);
+    }
 }

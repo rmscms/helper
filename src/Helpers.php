@@ -56,7 +56,6 @@ if (! function_exists('RMS\Helper\gregorian_date')) {
             throw new InvalidArgumentException('Invalid Persian date format. Expected: Y' . $separator . 'm' . $separator . 'd');
         }
 
-        // تبدیل به int برای checkdate
         $year = (int)$dates[0];
         $month = (int)$dates[1];
         $day = (int)$dates[2];
@@ -72,5 +71,64 @@ if (! function_exists('RMS\Helper\gregorian_date')) {
 
         $result = Carbon::createFromDate($newDate[0], $newDate[1], $newDate[2])->format('Y' . $separator . 'm' . $separator . 'd');
         return count($times) > 1 ? $result . ' ' . $times[1] : $result;
+    }
+}
+
+if (! function_exists('RMS\Helper\persian_to_timestamp')) {
+    function persian_to_timestamp(string $date, string $separator = '/'): int
+    {
+        $times = explode(' ', $date);
+        $dates = explode($separator, $times[0]);
+
+        if (count($dates) !== 3) {
+            throw new InvalidArgumentException('Invalid Persian date format. Expected: Y' . $separator . 'm' . $separator . 'd');
+        }
+
+        $year = (int)$dates[0];
+        $month = (int)$dates[1];
+        $day = (int)$dates[2];
+
+        if (!checkdate($month, $day, $year)) {
+            throw new InvalidArgumentException('Invalid Persian date values');
+        }
+
+        $gregorian = CalendarUtils::toGregorian($year, $month, $day);
+        return Carbon::createFromDate($gregorian[0], $gregorian[1], $gregorian[2])->startOfDay()->getTimestamp();
+    }
+}
+
+if (! function_exists('RMS\Helper\is_valid_persian_date')) {
+    function is_valid_persian_date(string $date, string $separator = '/'): bool
+    {
+        $dates = explode($separator, $date);
+        if (count($dates) !== 3) {
+            return false;
+        }
+
+        $year = (int)$dates[0];
+        $month = (int)$dates[1];
+        $day = (int)$dates[2];
+
+        return checkdate($month, $day, $year);
+    }
+}
+
+if (! function_exists('RMS\Helper\persian_date_diff')) {
+    function persian_date_diff(string $startDate, string $endDate, string $separator = '/'): int
+    {
+        $startTimestamp = persian_to_timestamp($startDate, $separator);
+        $endTimestamp = persian_to_timestamp($endDate, $separator);
+
+        $start = Carbon::createFromTimestamp($startTimestamp);
+        $end = Carbon::createFromTimestamp($endTimestamp);
+
+        return $start->diffInDays($end); // برعکس برای نتیجه مثبت
+    }
+}
+
+if (! function_exists('RMS\Helper\persian_now')) {
+    function persian_now(string $format = 'Y/m/d H:i:s'): string
+    {
+        return CalendarUtils::strftime($format, Carbon::now()->getTimestamp());
     }
 }
