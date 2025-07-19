@@ -36,7 +36,7 @@ class SoapServiceTest extends TestCase
             ->getMockForAbstractClass();
         $service->method('url')->willReturn('https://api.example.com?wsdl');
 
-        // تنظیم client با Reflection
+
         $reflection = new ReflectionProperty(Soap::class, 'client');
         $reflection->setAccessible(true);
         $reflection->setValue($service, $mock);
@@ -57,7 +57,7 @@ class SoapServiceTest extends TestCase
             ->getMockForAbstractClass();
         $service->method('url')->willReturn('https://api.example.com?wsdl');
 
-        // تنظیم client با Reflection
+
         $reflection = new ReflectionProperty(Soap::class, 'client');
         $reflection->setAccessible(true);
         $reflection->setValue($service, $mock);
